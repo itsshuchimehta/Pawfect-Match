@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { Heart } from "lucide-react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -18,7 +20,7 @@ interface Dog {
 interface DogCardProps {
   dog: Dog
   isFavorite: boolean
-  onToggleFavorite: () => void
+  onToggleFavorite: (e: React.MouseEvent) => void
 }
 
 export default function DogCard({ dog, isFavorite, onToggleFavorite }: DogCardProps) {

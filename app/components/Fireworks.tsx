@@ -23,9 +23,9 @@ export default function Fireworks() {
       speedY: number
       color: string
 
-      constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
+      constructor(canvasWidth: number, canvasHeight: number) {
+        this.x = Math.random() * canvasWidth
+        this.y = Math.random() * canvasHeight
         this.size = Math.random() * 5 + 1
         this.speedX = Math.random() * 3 - 1.5
         this.speedY = Math.random() * 3 - 1.5
@@ -38,8 +38,7 @@ export default function Fireworks() {
         if (this.size > 0.1) this.size -= 0.1
       }
 
-      draw() {
-        if (!ctx) return
+      draw(ctx: CanvasRenderingContext2D) {
         ctx.fillStyle = this.color
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
@@ -50,23 +49,28 @@ export default function Fireworks() {
     const particleArray: Particle[] = []
 
     function createParticles() {
+    const safeCanvas = canvas as HTMLCanvasElement
       for (let i = 0; i < 50; i++) {
-        particleArray.push(new Particle())
+        particleArray.push(new Particle(safeCanvas.width, safeCanvas.height))
       }
     }
 
+    let animationFrameId: number
+
     function animateParticles() {
-      if (!ctx) return
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const safeCtx = ctx as CanvasRenderingContext2D
+      const safeCanvas = canvas as HTMLCanvasElement
+
+      safeCtx.clearRect(0, 0, safeCanvas.width, safeCanvas.height)
       for (let i = 0; i < particleArray.length; i++) {
         particleArray[i].update()
-        particleArray[i].draw()
+        particleArray[i].draw(safeCtx)
         if (particleArray[i].size <= 0.1) {
           particleArray.splice(i, 1)
           i--
         }
       }
-      requestAnimationFrame(animateParticles)
+      animationFrameId = requestAnimationFrame(animateParticles)
     }
 
     createParticles()
@@ -74,7 +78,12 @@ export default function Fireworks() {
 
     const interval = setInterval(createParticles, 500)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
+    }
   }, [])
 
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-50" />

@@ -143,6 +143,7 @@ export default function Search() {
     updateFilters(initialFilters)
     localStorage.removeItem("searchFilters")
     localStorage.removeItem("selectedLocation")
+    setShowMoreFilters(false)
   }, [updateFilters, initialFilters])
 
   const renderNoResults = useCallback(() => <NoResults onClearFilters={handleClearFilters} />, [handleClearFilters])

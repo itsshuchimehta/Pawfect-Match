@@ -4,9 +4,12 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, PawPrint, Stars } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Fireworks from "./Fireworks"
 import { useMediaQuery } from "../hooks/useMediaQuery"
 import DynamicMetadata from "./DynamicMetadata"
+import { lazy, Suspense } from "react"
+
+// Lazy load the Fireworks component
+const LazyFireworks = lazy(() => import("./Fireworks"))
 
 interface Dog {
   id: string
@@ -25,17 +28,34 @@ interface MatchPopupProps {
 }
 
 export default function MatchPopup({ dog, onClose }: MatchPopupProps) {
+  const searchTitle = document.title
+  const searchDescription = document.querySelector('meta[name="description"]')?.getAttribute("content") || ""
   const [isVisible, setIsVisible] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [showFireworks, setShowFireworks] = useState(false)
   const isIpadMini = useMediaQuery("(width: 1024px) and (height: 768px)")
 
   useEffect(() => {
     setIsVisible(true)
     document.body.style.overflow = "hidden"
+
+    // Delay loading fireworks for better initial popup performance
+    const fireworksTimer = setTimeout(() => {
+      setShowFireworks(true)
+    }, 300)
+
     return () => {
       document.body.style.overflow = "unset"
+      clearTimeout(fireworksTimer)
+
+      // Restore search page metadata when popup closes
+      document.title = searchTitle
+      const metaDescription = document.querySelector('meta[name="description"]')
+      if (metaDescription && searchDescription) {
+        metaDescription.setAttribute("content", searchDescription)
+      }
     }
-  }, [])
+  }, [searchTitle, searchDescription])
 
   const handleClose = () => {
     setIsVisible(false)
@@ -55,7 +75,14 @@ export default function MatchPopup({ dog, onClose }: MatchPopupProps) {
             description={`Congratulations! You've found your Fur-ever Friend: ${dog.name}, a ${dog.age}-year-old ${dog.breed.toLowerCase()}.`}
             image={dog.img}
           />
-          <Fireworks />
+
+          {/* Lazy load fireworks with suspense fallback */}
+          {showFireworks && (
+            <Suspense fallback={null}>
+              <LazyFireworks />
+            </Suspense>
+          )}
+
           <div className="fixed inset-0 z-[9999]">
             <motion.div
               initial={{ opacity: 0 }}

@@ -58,7 +58,9 @@ export function useSearchDogs(initialFilters: SearchParams) {
   }, [])
 
   const debouncedFetchDogData = useCallback(
-    debounce((searchParams: SearchParams) => fetchDogData(searchParams), 300),
+    debounce((searchParams: SearchParams) => fetchDogData(searchParams), 300) as ((
+      searchParams: SearchParams,
+    ) => Promise<void>) & { cancel: () => void },
     [fetchDogData],
   )
 

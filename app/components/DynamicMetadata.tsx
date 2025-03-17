@@ -1,147 +1,128 @@
-"use client";
+/**
+ * Component for dynamically updating page metadata
+ * Handles title, description, and Open Graph tags
+ * Restores original metadata on unmount
+ */
+"use client"
 
-import { useEffect } from "react";
+import { useEffect } from "react"
 
 interface DynamicMetadataProps {
-  title?: string;
-  description?: string;
-  image?: string;
+  title?: string
+  description?: string
+  image?: string
 }
 
+// Define the original metadata from layout.tsx
 const ROOT_METADATA = {
   title: "Pawfect Match",
   description: "Find your perfect furry friend and give them a forever home.",
-  content: "default",
   ogTitle: "Pawfect Match",
   ogDescription: "Find your perfect furry friend and give them a forever home.",
   ogImage: "",
-};
+}
 
 export default function DynamicMetadata({ title, description, image }: DynamicMetadataProps) {
+ 
   useEffect(() => {
-    // Store current metadata
+    // Store the current metadata before changing it
     const currentMetadata = {
       title: document.title,
       description: document.querySelector('meta[name="description"]')?.getAttribute("content") || "",
       ogImage: document.querySelector('meta[property="og:image"]')?.getAttribute("content") || "",
       ogTitle: document.querySelector('meta[property="og:title"]')?.getAttribute("content") || "",
       ogDescription: document.querySelector('meta[property="og:description"]')?.getAttribute("content") || "",
-    };
-
-    // Update metadata (same as before)
-    if (title) document.title = title;
+    }
+    // Update metadata
+    if (title) {
+      document.title = title
+    }
+    
+    
+    // Create a collection of meta elements we've modified
+    const modifiedElements: HTMLMetaElement[] = []
 
     if (description) {
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription) {
-        metaDescription.setAttribute("content", description);
+      const metaDescription = document.querySelector('meta[name="description"]')
+      if (metaDescription instanceof HTMLMetaElement) {
+        metaDescription.setAttribute("content", description)
+        modifiedElements.push(metaDescription)
       } else {
-        const meta = document.createElement("meta");
-        meta.name = "description";
-        meta.content = description;
-        document.head.appendChild(meta);
+        const meta = document.createElement("meta")
+        meta.name = "description"
+        meta.content = description
+        document.head.appendChild(meta)
+        modifiedElements.push(meta)
       }
     }
 
     if (image) {
-      const ogImage = document.querySelector('meta[property="og:image"]');
-      if (ogImage) {
-        ogImage.setAttribute("content", image);
+      const ogImage = document.querySelector('meta[property="og:image"]')
+      if (ogImage instanceof HTMLMetaElement) {
+        ogImage.setAttribute("content", image)
+        modifiedElements.push(ogImage)
       } else {
-        const meta = document.createElement("meta");
-        meta.setAttribute("property", "og:image");
-        meta.content = image;
-        document.head.appendChild(meta);
+        const meta = document.createElement("meta")
+        meta.setAttribute("property", "og:image")
+        meta.content = image
+        document.head.appendChild(meta)
+        modifiedElements.push(meta)
       }
     }
-
     if (title) {
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) {
-        ogTitle.setAttribute("content", title);
+      const ogTitle = document.querySelector('meta[property="og:title"]')
+      if (ogTitle instanceof HTMLMetaElement) {
+        ogTitle.setAttribute("content", title)
+        modifiedElements.push(ogTitle)
       } else {
-        const meta = document.createElement("meta");
-        meta.setAttribute("property", "og:title");
-        meta.content = title;
-        document.head.appendChild(meta);
+        const meta = document.createElement("meta")
+        meta.setAttribute("property", "og:title")
+        meta.content = title
+        document.head.appendChild(meta)
+        modifiedElements.push(meta)
       }
     }
 
     if (description) {
-      const ogDescription = document.querySelector('meta[property="og:description"]');
-      if (ogDescription) {
-        ogDescription.setAttribute("content", description);
+      const ogDescription = document.querySelector('meta[property="og:description"]')
+      if (ogDescription instanceof HTMLMetaElement) {
+        ogDescription.setAttribute("content", description)
+        modifiedElements.push(ogDescription)
       } else {
-        const meta = document.createElement("meta");
-        meta.setAttribute("property", "og:description");
-        meta.content = description;
-        document.head.appendChild(meta);
+        const meta = document.createElement("meta")
+        meta.setAttribute("property", "og:description")
+        meta.content = description
+        document.head.appendChild(meta)
+        modifiedElements.push(meta)
       }
     }
 
-    // Clean up next-size-adjust tags
-    const cleanUpNextSizeAdjust = () => {
-      const metaTags = document.querySelectorAll('meta[name="next-size-adjust"]');
-      metaTags.forEach((tag) => {
-        const content = tag.getAttribute("content");
-        if (!content || content === "null" || content === "") {
-          tag.remove(); // Remove if content is null, empty, or "null"
-        }
-      });
-
-      // Ensure a valid next-size-adjust tag exists
-      if (!document.querySelector('meta[name="next-size-adjust"][content]')) {
-        const meta = document.createElement("meta");
-        meta.name = "next-size-adjust";
-        meta.content = "default";
-        document.head.appendChild(meta);
-      }
-    };
-
-    cleanUpNextSizeAdjust();
-
-    // Watch for dynamic injections
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.addedNodes.length) {
-          cleanUpNextSizeAdjust();
-        }
-      });
-    });
-
-    const head = document.querySelector("head");
-    if (head) {
-      observer.observe(head, { childList: true, subtree: true });
-    }
-
-    // Cleanup on unmount
+    // Cleanup function to restore original metadata when component unmounts
     return () => {
-      document.title = ROOT_METADATA.title;
+      // Always restore to the root metadata from layout.tsx
+      document.title = ROOT_METADATA.title
 
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription) {
-        metaDescription.setAttribute("content", ROOT_METADATA.description);
-      }
+      // Safely restore meta tags
+      modifiedElements.forEach((element) => {
+        try {
+          if (element && element.parentNode) {
+            if (element.getAttribute("name") === "description") {
+              element.setAttribute("content", ROOT_METADATA.description)
+            } else if (element.getAttribute("property") === "og:image" && ROOT_METADATA.ogImage) {
+              element.setAttribute("content", ROOT_METADATA.ogImage)
+            } else if (element.getAttribute("property") === "og:title") {
+              element.setAttribute("content", ROOT_METADATA.ogTitle)
+            } else if (element.getAttribute("property") === "og:description") {
+              element.setAttribute("content", ROOT_METADATA.ogDescription)
+            }
+          }
+        } catch (e) {
+          console.error("Error cleaning up meta tag:", e)
+        }
+      })
+    }
+  }, [title, description, image])
 
-      const ogImage = document.querySelector('meta[property="og:image"]');
-      if (ogImage && ROOT_METADATA.ogImage) {
-        ogImage.setAttribute("content", ROOT_METADATA.ogImage);
-      }
-
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) {
-        ogTitle.setAttribute("content", ROOT_METADATA.ogTitle);
-      }
-
-      const ogDescription = document.querySelector('meta[property="og:description"]');
-      if (ogDescription) {
-        ogDescription.setAttribute("content", ROOT_METADATA.ogDescription);
-      }
-
-      cleanUpNextSizeAdjust();
-      observer.disconnect();
-    };
-  }, [title, description, image]);
-
-  return null;
+  // This component doesn't render anything
+  return null
 }

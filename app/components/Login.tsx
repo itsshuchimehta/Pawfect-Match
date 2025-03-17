@@ -34,34 +34,115 @@ const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email)
 }
 
+// Add a debounce function
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null
+
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
+}
+
 export default function Login({ onLogin }: LoginProps) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({})
   const [isLoading, setIsLoading] = useState(false)
-  // Add this new state variable at the beginning of the component
   const [loginError, setLoginError] = useState<string | null>(null)
+  const [activeSection, setActiveSection] = useState<"hero" | "login" | "features" | "cta">("hero")
+  // Add a new state to track if we're currently scrolling
+  const [isScrolling, setIsScrolling] = useState(false)
+  // Add a state to track the section we want to display in metadata
+  const [metadataSection, setMetadataSection] = useState<"hero" | "login" | "features" | "cta">("hero")
 
   const loginFormRef = useRef<HTMLDivElement>(null)
   const featuresRef = useRef<HTMLDivElement>(null)
+  const ctaRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
   const isLoginFormInView = useInView(loginFormRef, { once: false, margin: "-100px" })
   const isFeaturesInView = useInView(featuresRef, { once: true, margin: "-100px" })
+  const isCtaInView = useInView(ctaRef, { once: false, margin: "-100px" })
+  // Fix the useInView options for the hero section
+  const isHeroInView = useInView(heroRef, { amount: 0.6 })
   const controls = useAnimation()
   const featuresControls = useAnimation()
 
+  // Create a debounced version of setMetadataSection
+  const debouncedSetMetadataSection = useRef(
+    debounce((section: "hero" | "login" | "features" | "cta") => {
+      setMetadataSection(section)
+      setIsScrolling(false)
+    }, 300), // 300ms debounce time
+  ).current
+
+  // Update the useEffect for isLoginFormInView
   useEffect(() => {
     if (isLoginFormInView) {
       controls.start("visible")
+      setActiveSection("login")
+      debouncedSetMetadataSection("login")
     }
-  }, [isLoginFormInView, controls])
+  }, [isLoginFormInView, controls, debouncedSetMetadataSection])
 
+  // Update the useEffect for isFeaturesInView
   useEffect(() => {
     if (isFeaturesInView) {
       featuresControls.start("visible")
+      setActiveSection("features")
+      debouncedSetMetadataSection("features")
     }
-  }, [isFeaturesInView, featuresControls])
+  }, [isFeaturesInView, featuresControls, debouncedSetMetadataSection])
+
+  // Add a new useEffect for the CTA section
+  useEffect(() => {
+    if (isCtaInView) {
+      setActiveSection("cta")
+      debouncedSetMetadataSection("cta")
+    }
+  }, [isCtaInView, debouncedSetMetadataSection])
+
+  // Add a dedicated useEffect for the hero section
+  useEffect(() => {
+    if (isHeroInView) {
+      setActiveSection("hero")
+      debouncedSetMetadataSection("hero")
+    }
+  }, [isHeroInView, debouncedSetMetadataSection])
+
+  // Add an effect to detect scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolling(true)
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
+  // Add an effect to handle programmatic scrolling
+  useEffect(() => {
+    const handleScrollEnd = () => {
+      // When scrolling stops, update metadata to match active section
+      if (isScrolling) {
+        debouncedSetMetadataSection(activeSection)
+      }
+    }
+
+    // Check if scrolling has stopped after a delay
+    const scrollTimeout = setTimeout(handleScrollEnd, 100)
+
+    return () => {
+      clearTimeout(scrollTimeout)
+    }
+  }, [isScrolling, activeSection, debouncedSetMetadataSection])
 
   const scrollToSection = (sectionId: string) => {
+    setIsScrolling(true) // Set scrolling state when programmatically scrolling
+
     const section = document.getElementById(sectionId)
     if (section) {
       const headerHeight = 80 // Adjust this value based on your header height
@@ -70,6 +151,13 @@ export default function Login({ onLogin }: LoginProps) {
         top: elementPosition,
         behavior: "smooth",
       })
+
+      // Set the target section immediately for better UX during programmatic scrolling
+      if (sectionId === "login-form") {
+        debouncedSetMetadataSection("login")
+      } else if (sectionId === "features") {
+        debouncedSetMetadataSection("features")
+      }
     }
   }
 
@@ -173,23 +261,42 @@ export default function Login({ onLogin }: LoginProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 dark:from-gray-900 dark:to-purple-900 relative overflow-hidden">
+      {/* Update the DynamicMetadata component to use metadataSection instead of activeSection */}
       <DynamicMetadata
-        title="Login | Pawfect Match"
-        description="Sign in to Pawfect Match and start your journey to find your perfect furry friend. Browse adoptable dogs, use our matching system, and connect with local shelters."
+        title={
+          metadataSection === "hero"
+            ? "Pawfect Match - Find Your Furry Friend"
+            : metadataSection === "login"
+              ? "Login | Pawfect Match"
+              : metadataSection === "features"
+                ? "Why Choose Pawfect Match | Features"
+                : "Start Your Journey | Pawfect Match"
+        }
+        description={
+          metadataSection === "hero"
+            ? "Find your perfect furry friend and give them a forever home with Pawfect Match."
+            : metadataSection === "login"
+              ? "Sign in to Pawfect Match and start your journey to find your perfect furry friend."
+              : metadataSection === "features"
+                ? "Discover why thousands choose Pawfect Match for dog adoption. Wide selection, perfect matching, and local shelter support."
+                : "Join thousands of happy pet owners who found their furry companions through Pawfect Match."
+        }
       />
       <PawPrintBackground />
 
-      <Hero
-        isAuthenticated={false}
-        onGetStarted={() => scrollToSection("login-form")}
-        onLearnMore={() => scrollToSection("features")}
-        className="min-h-[100vh] flex flex-col items-center justify-center"
-      />
+      <div ref={heroRef}>
+        <Hero
+          isAuthenticated={false}
+          onGetStarted={() => scrollToSection("login-form")}
+          onLearnMore={() => scrollToSection("features")}
+          className="min-h-[100vh] flex flex-col items-center justify-center"
+        />
+      </div>
 
       <motion.section
         id="login-form"
         ref={loginFormRef}
-        className="py-16 px-6 sm:px-8 md:px-12 lg:px-16 bg-white/40 backdrop-blur-sm min-h-screen opacity-0 flex items-center justify-center dark:bg-gray-800/40"
+        className="py-16 md:px-12 lg:px-16 bg-white/40 backdrop-blur-sm min-h-screen opacity-0 flex items-center justify-center dark:bg-gray-800/40"
         initial={{ opacity: 0, y: 50, scale: 0.9 }}
         animate={
           isLoginFormInView
@@ -380,7 +487,10 @@ export default function Login({ onLogin }: LoginProps) {
         </motion.div>
       </motion.section>
 
-      <section className="py-12 md:py-16 bg-gradient-to-r from-purple-300 to-pink-300 dark:from-purple-800 dark:to-pink-800 text-gray-800 dark:text-gray-200">
+      <section
+        className="py-12 md:py-16 bg-gradient-to-r from-purple-300 to-pink-300 dark:from-purple-800 dark:to-pink-800 text-gray-800 dark:text-gray-200"
+        ref={ctaRef}
+      >
         <div className="container mx-auto max-w-4xl px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Meet Your Perfect Match?</h2>
           <p className="text-xl mb-8 opacity-90">
@@ -395,7 +505,7 @@ export default function Login({ onLogin }: LoginProps) {
               Start Your Journey Today
               <ArrowRight className="ml-2 h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1" />
             </span>
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-white/0 via-white/70 to-white/0 dark:from-primary/0 dark:via-primary/70 dark:to-primary/0 transition-transform duration-1000 ease-in-out"></span>
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-white/0 via-white/70 to-white/0 dark:from-primary/0 dark:via-primary/70 dark:to-primary/0 transition-transform duration-1000 ease-in-out" />
           </Button>
         </div>
       </section>

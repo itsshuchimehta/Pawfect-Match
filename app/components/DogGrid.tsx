@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { motion } from "framer-motion"
 import DogCard from "./DogCard"
 import type { Dog } from "../types"
@@ -24,7 +26,7 @@ export default function DogGrid({ dogs, favorites, onDogClick, onToggleFavorite 
           <DogCard
             dog={dog}
             isFavorite={favorites.includes(dog.id)}
-            onToggleFavorite={(e) => {
+            onToggleFavorite={(e: React.MouseEvent) => {
               e.stopPropagation()
               onToggleFavorite(dog.id)
             }}

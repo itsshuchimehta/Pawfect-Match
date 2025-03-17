@@ -101,21 +101,21 @@ export default function Header({ isAuthenticated, onLogout, userName, isDarkMode
     <>
       {isAuthenticated ? (
         <>
-          <div className="flex items-center gap-4">
-            <span className="text-base text-primary/80 dark:text-primary/60 font-medium">
+          
+            <span className="text-base text-primary/80 dark:text-primary/60 font-medium md:flex items-center gap-4">
               Welcome back, {userName}!
             </span>
             <Button
               variant="outline"
               onClick={() => handleNavigation(handleLogout)}
               className={`bg-white/80 dark:bg-primary hover:bg-white dark:hover:bg-primary/90 text-primary hover:text-primary/80 dark:text-primary-foreground dark:hover:text-primary-foreground/80 border-primary/20 dark:border-primary/40 hover:border-primary/40 dark:hover:border-primary/60 transition-all duration-300 ${
-                isMobile ? "w-full" : ""
+                isMobile ? "w-full" : "ml-2"
               }`}
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </Button>
-          </div>
+        
         </>
       ) : (
         <>
