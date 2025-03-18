@@ -5,6 +5,8 @@ const nextConfig = {
       unoptimized: true,
     },
     trailingSlash: true,
+    basePath: '/Pawfect-Match', 
+    assetPrefix: '/Pawfect-Match/',
   }
   
   module.exports = nextConfig
