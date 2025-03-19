@@ -16,7 +16,7 @@
     "start": "next start",
     "lint": "next lint",
     "export": "next export",
-    "deploy": "gh-pages -d out --dotfiles"
+    "deploy": "gh-pages -d out --dotfiles --nojekyll"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
