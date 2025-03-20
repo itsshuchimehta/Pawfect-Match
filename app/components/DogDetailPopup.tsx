@@ -1,12 +1,8 @@
-/**
- * Detailed view of a selected dog
- * Provides swipe navigation and favorite toggling functionality
- */
 "use client"
 
 import type React from "react"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { motion, AnimatePresence, type PanInfo } from "framer-motion"
 import { X, Heart, ChevronLeft, ChevronRight, Bone, Cake, MapPin, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -27,6 +23,34 @@ interface DogDetailPopupProps {
   isLastPage: boolean
   isLoading: boolean
 }
+
+const SwipeHint = () => (
+  <motion.div
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -20 }}
+    transition={{ duration: 0.3 }}
+    className="absolute top-0 left-0 right-0 z-30 pointer-events-none"
+  >
+    <div className="bg-gradient-to-b from-black/60 to-transparent pt-4 pb-8 px-4">
+      <div className="flex items-center justify-center space-x-2 text-white">
+        <motion.div
+          animate={{
+            x: [0, 20, 0],
+            opacity: [0, 1, 0],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Number.POSITIVE_INFINITY,
+            repeatType: "loop",
+          }}
+          className="w-4 h-4 bg-white rounded-full"
+        />
+        <span className="text-sm font-medium">Swipe to view more dogs</span>
+      </div>
+    </div>
+  </motion.div>
+)
 
 export default function DogDetailPopup({
   dogs,
@@ -127,24 +151,59 @@ export default function DogDetailPopup({
     enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
       opacity: 0,
+      scale: 0.95,
     }),
     center: {
       x: 0,
       opacity: 1,
+      scale: 1,
     },
     exit: (direction: number) => ({
       x: direction < 0 ? 1000 : -1000,
       opacity: 0,
+      scale: 0.95,
     }),
   }
 
   const showPrevButton = !(isFirstPage && currentIndex === 0) && !isSmallScreen
   const showNextButton = !(isLastPage && currentIndex === dogs.length - 1) && !isSmallScreen
 
+  const truncateDescription = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text
+    return text.slice(0, maxLength).trim() + "..."
+  }
+
+  // Memoize previous and next dog data for optimized navigation
+  const prevDog = useMemo(() => {
+    if (currentIndex > 0) {
+      return dogs[currentIndex - 1]
+    }
+    return null
+  }, [dogs, currentIndex])
+
+  const nextDog = useMemo(() => {
+    if (currentIndex < dogs.length - 1) {
+      return dogs[currentIndex + 1]
+    }
+    return null
+  }, [dogs, currentIndex])
+
+  useEffect(() => {
+    if (prevDog?.img) {
+      const prevImg = new Image()
+      prevImg.src = prevDog.img
+    }
+
+    if (nextDog?.img) {
+      const nextImg = new Image()
+      nextImg.src = nextDog.img
+    }
+  }, [prevDog, nextDog])
+
   const handlePrev = async (e: React.MouseEvent) => {
     e.stopPropagation()
     if (isLoading || isChangingPage) return
-    if (currentIndex > 0) {
+    if (prevDog) {
       setDirection(-1)
       onPrev()
     } else if (!isFirstPage) {
@@ -157,7 +216,7 @@ export default function DogDetailPopup({
   const handleNext = async (e: React.MouseEvent) => {
     e.stopPropagation()
     if (isLoading || isChangingPage) return
-    if (currentIndex < dogs.length - 1) {
+    if (nextDog) {
       setDirection(1)
       onNext()
     } else if (!isLastPage) {
@@ -167,38 +226,9 @@ export default function DogDetailPopup({
     }
   }
 
-  const SwipeHint = () => (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="absolute top-0 left-0 right-0 z-30 pointer-events-none"
-    >
-      <div className="bg-gradient-to-b from-black/60 to-transparent pt-4 pb-8 px-4">
-        <div className="flex items-center justify-center space-x-2 text-white">
-          <motion.div
-            animate={{
-              x: [0, 20, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Number.POSITIVE_INFINITY,
-              repeatType: "loop",
-            }}
-            className="w-4 h-4 bg-white rounded-full"
-          />
-          <span className="text-sm font-medium">Swipe to view more dogs</span>
-        </div>
-      </div>
-    </motion.div>
-  )
-
-  const truncateDescription = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text
-    return text.slice(0, maxLength).trim() + "..."
-  }
+  useEffect(() => {
+    setShowFullDescription(false)
+  }, [currentDog?.id])
 
   const metadataTitle = currentDog ? `${currentDog.name} - Pawfect Match` : "Pawfect Match"
   const metadataDescription = currentDog
@@ -216,7 +246,7 @@ export default function DogDetailPopup({
     >
       {currentDog && <DynamicMetadata title={metadataTitle} description={metadataDescription} image={currentDog.img} />}
       <div className="relative w-full max-w-3xl h-[80vh] max-h-[800px]" onClick={(e) => e.stopPropagation()}>
-        <AnimatePresence initial={false} custom={direction}>
+        <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div
             key={currentDog?.id}
             custom={direction}
@@ -226,9 +256,11 @@ export default function DogDetailPopup({
             exit="exit"
             transition={{
               x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 },
+              opacity: { duration: 0.3 },
+              scale: { duration: 0.3 },
+              layout: { duration: 0.3 },
             }}
-            className="absolute inset-0 bg-white rounded-2xl shadow-2xl overflow-hidden"
+            className="absolute inset-0 bg-white rounded-2xl shadow-2xl overflow-hidden will-change-transform transform-gpu"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.7}
@@ -236,10 +268,8 @@ export default function DogDetailPopup({
           >
             {showSwipeHint && <SwipeHint />}
 
-            {/* Image Container with fixed aspect ratio and blurred background */}
             <div className="absolute inset-0 bg-gray-100">
               <div className="w-full h-full" style={{ aspectRatio: "4/3" }}>
-                {/* Blurred background (always visible) */}
                 <div
                   className="absolute inset-0 bg-cover bg-center blur-xl scale-110"
                   style={{
@@ -247,7 +277,6 @@ export default function DogDetailPopup({
                     opacity: 0.5,
                   }}
                 />
-                {/* Main image (only visible when loaded and not changing page) */}
                 {!isLoading && !isChangingPage && imageLoaded && (
                   <img
                     src={currentDog?.img || "/placeholder.svg"}
@@ -257,18 +286,15 @@ export default function DogDetailPopup({
                 )}
               </div>
 
-              {/* Gradient overlay for text visibility */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             </div>
 
-            {/* Loading overlay */}
             {(isLoading || isChangingPage || !imageLoaded) && (
               <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                 <Loader2 className="h-8 w-8 animate-spin text-white" />
               </div>
             )}
 
-            {/* Close and Favorite Buttons */}
             <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -297,9 +323,13 @@ export default function DogDetailPopup({
               </Button>
             </div>
 
-            {/* Basic Info and Description */}
             {currentDog && (
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+                className="absolute bottom-0 left-0 right-0 p-6 text-white"
+              >
                 <h2 className="text-3xl font-bold mb-2">{currentDog.name}</h2>
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
@@ -356,12 +386,11 @@ export default function DogDetailPopup({
                     Show less
                   </Button>
                 )}
-              </div>
+              </motion.div>
             )}
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Buttons */}
         <div className="absolute inset-y-0 left-0 flex items-center justify-start pointer-events-none">
           {showPrevButton && (
             <Button
