@@ -1,7 +1,5 @@
 # 🐾 Pawfect Match
 
-![Pawfect Match Banner](public/pawfect-match-banner.png)
-
 A modern dog adoption platform designed to connect potential pet owners with their ideal canine companions. Pawfect Match provides an intuitive, responsive interface for browsing, filtering, and matching with dogs available for adoption.
 
 ## ✨ Features
@@ -45,7 +43,7 @@ A modern dog adoption platform designed to connect potential pet owners with the
    ```
 2. Install dependencies:
     ```bash
-    npm install
+    npm install --legacy-peer-deps 
     # or
     yarn install
     ```
