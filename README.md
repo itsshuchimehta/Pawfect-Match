@@ -82,3 +82,6 @@ The application uses a simple email/name-based authentication system with:
 - Cookie-based session management
 - Automatic token refresh
 - Secure storage of user preferences
+
+## 🌐 Browser Compatibility
+If you encounter authentication issues, please ensure that cross-site tracking is not being blocked. Go to Browser's Settings > Privacy & Security and disable “Prevent Cross-Site Tracking.”
