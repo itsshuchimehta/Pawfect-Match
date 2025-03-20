@@ -40,7 +40,7 @@ A modern dog adoption platform designed to connect potential pet owners with the
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/pawfect-match.git
+   git clone https://github.com/itsshuchimehta/Pawfect-Match.git
    cd pawfect-match
    ```
 2. Install dependencies:
