@@ -3,7 +3,7 @@
 A modern dog adoption platform designed to connect potential pet owners with their ideal canine companions. Pawfect Match provides an intuitive, responsive interface for browsing, filtering, and matching with dogs available for adoption.
 
 - [✨ Features](#-features)
-- [🛠️ Tech Stack](#-tech-stack)
+- [🛠️ Tech Stack](#%EF%B8%8F-tech-stack)
 - [🚀 Installation](#-installation)
 - [🌐 Browser Compatibility](#-browser-compatibility)
 
