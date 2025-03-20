@@ -1,4 +1,4 @@
-# [icon](public/apple-touch-icon.png) Pawfect Match
+# ![Pawfect Match Banner](public/apple-touch-icon.png) Pawfect Match
 
 A modern dog adoption platform designed to connect potential pet owners with their ideal canine companions. Pawfect Match provides an intuitive, responsive interface for browsing, filtering, and matching with dogs available for adoption.
 
