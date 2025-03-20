@@ -2,10 +2,10 @@
 
 A modern dog adoption platform designed to connect potential pet owners with their ideal canine companions. Pawfect Match provides an intuitive, responsive interface for browsing, filtering, and matching with dogs available for adoption.
 
-- [✨ Features](#features)
-- [🛠️ Tech Stack](#tech-stack)
-- [🚀 Installation](#installation)
-- [🌐 Browser Compatibility](#browser-compatibility)
+- [✨ Features](#-features)
+- [🛠️ Tech Stack](#%EF%B8%8F-tech-stack)
+- [🚀 Installation](#-installation)
+- [🌐 Browser Compatibility](#-browser-compatibility)
 
 ## ✨ Features
 
@@ -24,6 +24,7 @@ A modern dog adoption platform designed to connect potential pet owners with the
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) with custom color scheme
 - **UI Components**: [shadcn/ui](https://ui.shadcn.com/) for consistent, accessible components
 - **Animations**: [Framer Motion](https://www.framer.com/motion/) for smooth, physics-based animations
+- **State Management**: React hooks and context API
 - **Type Safety**: [TypeScript](https://www.typescriptlang.org/) for improved developer experience
 
 ### Performance Optimizations
