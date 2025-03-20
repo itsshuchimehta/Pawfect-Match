@@ -504,8 +504,7 @@ export default function Login({ onLogin }: LoginProps) {
             <span className="relative z-10 flex items-center">
               Start Your Journey Today
               <ArrowRight className="ml-2 h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1" />
-            </span>
-            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-white/0 via-white/70 to-white/0 dark:from-primary/0 dark:via-primary/70 dark:to-primary/0 transition-transform duration-1000 ease-in-out" />
+            </span>    
           </Button>
         </div>
       </section>
