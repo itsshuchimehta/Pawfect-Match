@@ -99,7 +99,7 @@ export default function DogDetailPopup({
         setCurrentDog(newDog)
         setImageLoaded(false)
         const img = new Image()
-        img.src = newDog.img || "/placeholder.svg"
+        img.src = newDog.img || "./placeholder.svg"
         img.onload = () => setImageLoaded(true)
       }
     }
@@ -273,13 +273,13 @@ export default function DogDetailPopup({
                 <div
                   className="absolute inset-0 bg-cover bg-center blur-xl scale-110"
                   style={{
-                    backgroundImage: `url(${currentDog?.img || "/placeholder.svg"})`,
+                    backgroundImage: `url(${currentDog?.img || "./placeholder.svg"})`,
                     opacity: 0.5,
                   }}
                 />
                 {!isLoading && !isChangingPage && imageLoaded && (
                   <img
-                    src={currentDog?.img || "/placeholder.svg"}
+                    src={currentDog?.img || "./placeholder.svg"}
                     alt={currentDog?.name}
                     className="absolute inset-0 w-full h-full object-contain"
                   />

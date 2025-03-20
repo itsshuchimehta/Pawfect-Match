@@ -5,8 +5,8 @@ const nextConfig = {
       unoptimized: true,
     },
     trailingSlash: true,
-    basePath: '/Pawfect-Match', 
-    assetPrefix: '/Pawfect-Match/',
+    basePath: process.env.NODE_ENV === 'production' ? '/Pawfect-Match' : '', 
+    assetPrefix: process.env.NODE_ENV === 'production' ? '/Pawfect-Match/' : '',
   }
   
   module.exports = nextConfig

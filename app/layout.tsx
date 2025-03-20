@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   title: "Pawfect Match",
   description: "Find your perfect furry friend and give them a forever home.",
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "./favicon.ico",
+    apple: "./apple-touch-icon.png",
   },
 }
 

@@ -37,13 +37,13 @@ export default function DogCard({ dog, isFavorite, onToggleFavorite }: DogCardPr
         <div
           className="absolute inset-0 bg-cover bg-center blur-xl scale-110"
           style={{
-            backgroundImage: `url(${dog.img || "/placeholder.svg"})`,
+            backgroundImage: `url(${dog.img || "./placeholder.svg"})`,
             opacity: 0.5,
           }}
         />
         {/* Main image */}
         <img
-          src={dog.img || "/placeholder.svg"}
+          src={dog.img || "./placeholder.svg"}
           alt={dog.name}
           className="absolute inset-0 w-full h-full object-contain"
         />
