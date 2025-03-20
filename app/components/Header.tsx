@@ -45,7 +45,7 @@ export default function Header({ isAuthenticated, onLogout, userName, isDarkMode
     setIsMobileMenuOpen(false)
     const section = document.getElementById(sectionId)
     if (section) {
-      const headerHeight = 80 // Adjust this value based on your header height
+      const headerHeight = 80 
       const elementPosition = section.getBoundingClientRect().top + window.pageYOffset
       const offsetPosition = elementPosition - headerHeight
 
