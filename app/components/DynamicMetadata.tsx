@@ -39,7 +39,6 @@ export default function DynamicMetadata({ title, description, image }: DynamicMe
     }
     
     
-    // Create a collection of meta elements we've modified
     const modifiedElements: HTMLMetaElement[] = []
 
     if (description) {
@@ -99,10 +98,7 @@ export default function DynamicMetadata({ title, description, image }: DynamicMe
 
     // Cleanup function to restore original metadata when component unmounts
     return () => {
-      // Always restore to the root metadata from layout.tsx
       document.title = ROOT_METADATA.title
-
-      // Safely restore meta tags
       modifiedElements.forEach((element) => {
         try {
           if (element && element.parentNode) {
@@ -123,6 +119,5 @@ export default function DynamicMetadata({ title, description, image }: DynamicMe
     }
   }, [title, description, image])
 
-  // This component doesn't render anything
   return null
 }

@@ -84,7 +84,6 @@ export default function WelcomeAnimation({ isDarkMode }: { isDarkMode: boolean }
           </span>
         </motion.h1>
       </div>
-      {/* SVG gradient definition */}
       <svg width="0" height="0">
         <defs>
           <linearGradient id="pawGradient" x1="0%" y1="0%" x2="100%" y2="0%">

@@ -24,12 +24,13 @@ async function customFetch(url: string, options: RequestInit = {}): Promise<Resp
     localStorage.removeItem("isAuthenticated")
     localStorage.removeItem("authExpiration")
     localStorage.removeItem("userName")
-
-    throw new Error("Unauthorized, redirecting to login")
+    window.location.href = '/';
+    throw new Error("Unauthorized, redirecting to Login!")
   }
   if (!response.ok) {
     const errorText = await response.text()
     throw new Error(`Request failed: ${response.status} ${errorText}`)
+    
   }
   return response
 }
@@ -73,7 +74,13 @@ export async function getBreeds(): Promise<string[]> {
     return breedCache.get("breeds")
   }
   try {
-    const response = await customFetch(`${BASE_URL}/dogs/breeds`)
+    const response = await fetch(`${BASE_URL}/dogs/breeds`, {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
     const breeds = await response.json()
     breedCache.set("breeds", breeds)
     return breeds
@@ -113,7 +120,7 @@ export async function generateMatch(dogIds: string[]): Promise<string> {
   return match
 }
 
-export async function login(name: string, email: string): Promise<void> {
+export async function login(name: string, email: string): Promise<boolean> {
   await customFetch(`${BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -124,6 +131,16 @@ export async function login(name: string, email: string): Promise<void> {
   localStorage.setItem("authExpiration", (Date.now() + 3600000).toString()) // 1 hour expiration
   localStorage.setItem("userName", name)
   localStorage.setItem("loginTimestamp", Date.now().toString())
+  
+  const response = await getBreeds()
+  if (response.length == 0) {
+    localStorage.removeItem("isAuthenticated")
+    localStorage.removeItem("authExpiration")
+    localStorage.removeItem("userName")
+    return false
+  }else{
+    return true
+  }
 }
 
 export async function logout(): Promise<void> {
@@ -132,10 +149,8 @@ export async function logout(): Promise<void> {
       method: "POST",
     })
   } catch (error) {
-    // Log error but continue with local cleanup regardless of server response
     console.error("Error during logout:", error)
   } finally {
-    // Clear local storage
     localStorage.clear()
   }
 }
@@ -150,7 +165,6 @@ export function checkAuthStatus(): { isAuthenticated: boolean; userName: string 
       if (Date.now() < Number(authExpiration)) {
         return { isAuthenticated: true, userName: userName }
       } else {
-        // Clear all auth-related data if expired
         localStorage.removeItem("isAuthenticated")
         localStorage.removeItem("authExpiration")
         localStorage.removeItem("userName")

@@ -82,8 +82,6 @@ export default function DogDetailPopup({
     return () => {
       document.body.style.overflow = "unset"
       clearTimeout(timer)
-
-      // Restore search page metadata when popup closes
       document.title = searchTitle
       const metaDescription = document.querySelector('meta[name="description"]')
       if (metaDescription && searchDescription) {

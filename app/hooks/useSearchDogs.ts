@@ -43,13 +43,12 @@ export function useSearchDogs(initialFilters: SearchParams) {
 
       setDogs(dogsWithLocationInfo)
     } catch (error) {
-      let errorMessage = "Failed to fetch dogs. Please try again later."
       if (error instanceof Error) {
-        errorMessage += ` Error details: ${error.message}`
+        setError(` Error details: ${error.message}`)
       } else if (typeof error === "object" && error !== null) {
-        errorMessage += ` Error details: ${JSON.stringify(error)}`
+        setError(` Error details: ${JSON.stringify(error)}`)
       }
-      setError(errorMessage)
+      
       setDogs([])
       setSearchResponse(null)
     } finally {

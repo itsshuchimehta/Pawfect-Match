@@ -87,11 +87,7 @@ export default function Header({ isAuthenticated, onLogout, userName, isDarkMode
   )
 
   const handleNavigation = (action: () => void) => {
-    // First close the menu
     setIsMobileMenuOpen(false)
-
-    // Use setTimeout to ensure the menu closing animation completes
-    // before attempting navigation
     setTimeout(() => {
       action()
     }, 10)
@@ -101,7 +97,6 @@ export default function Header({ isAuthenticated, onLogout, userName, isDarkMode
     <>
       {isAuthenticated ? (
         <>
-          
             <span className="text-base text-primary/80 dark:text-primary/60 font-medium md:flex items-center gap-4">
               Welcome back, {userName}!
             </span>
@@ -115,7 +110,6 @@ export default function Header({ isAuthenticated, onLogout, userName, isDarkMode
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </Button>
-        
         </>
       ) : (
         <>
@@ -262,7 +256,7 @@ export default function Header({ isAuthenticated, onLogout, userName, isDarkMode
           )}
         </AnimatePresence>
       </header>
-      {/* Add a spacer to prevent content from being hidden under the fixed header */}
+      {/* Added a spacer to prevent content from being hidden under the fixed header */}
       <div className="h-20"></div>
     </motion.div>
   )

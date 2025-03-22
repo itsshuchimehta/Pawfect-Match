@@ -22,18 +22,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   
 
   useEffect(() => {    
-    // Check system preference for dark mode
     const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
     setIsDarkMode(darkModeMediaQuery.matches)
 
-    // Listen for changes in system preference
     const listener = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
     darkModeMediaQuery.addListener(listener)
     return () => darkModeMediaQuery.removeListener(listener)
   }, [])
 
   useEffect(() => {
-    // Apply or remove dark class based on isDarkMode state
     if (isDarkMode) {
       document.documentElement.classList.add("dark")
     } else {
@@ -80,7 +77,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       setUserName("")
       setShowLogoutAnimation(false)
       router.push("/")
-    }, 2000) // Show animation for 2 seconds
+    }, 2000) 
   }
 
   const isRootPath = pathname === "/"

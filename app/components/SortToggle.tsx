@@ -22,7 +22,7 @@ export default function SortToggle({ onToggle }: SortToggleProps) {
   const handleAgeToggle = () => {
     const newOrder = ageSortOrder === "asc" ? "desc" : "asc"
     setAgeSortOrder(newOrder)
-    setBreedSortOrder("asc") // Reset breed sort to asc
+    setBreedSortOrder("asc") 
     onToggle("age", newOrder)
   }
 

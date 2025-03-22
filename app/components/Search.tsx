@@ -85,11 +85,7 @@ export default function Search() {
     })
   }, [dogs.length])
 
-  const calculateTotalPages = useCallback((total: number, pageSize: number) => {
-    return Math.ceil(Math.min(total, 10000) / pageSize)
-  }, [])
 
-  // Update filters when page size changes
   useEffect(() => {
     updateFilters({ size: pageSize })
   }, [pageSize, updateFilters])
@@ -97,7 +93,7 @@ export default function Search() {
   const scrollToSection = useCallback((sectionId: string) => {
     const section = document.getElementById(sectionId)
     if (section) {
-      const headerHeight = 80 // Adjust this value based on your header height
+      const headerHeight = 80 
       const elementPosition = section.getBoundingClientRect().top + window.pageYOffset - headerHeight
       window.scrollTo({
         top: elementPosition,
@@ -118,8 +114,8 @@ export default function Search() {
     (newFilters: Partial<SearchParams>) => {
       updateFilters({
         ...newFilters,
-        from: "0", // Reset to first page on filter change
-        size: pageSize, // Ensure the current page size is applied
+        from: "0", 
+        size: pageSize, 
       })
     },
     [updateFilters, pageSize],
@@ -146,8 +142,6 @@ export default function Search() {
     setShowMoreFilters(false)
   }, [updateFilters, initialFilters])
 
-  const renderNoResults = useCallback(() => <NoResults onClearFilters={handleClearFilters} />, [handleClearFilters])
-
   const handleDogDetailPageChange = useCallback(
     async (direction: "prev" | "next") => {
       const currentPage = Math.floor(Number(filters.from) / pageSize) + 1
@@ -156,23 +150,21 @@ export default function Search() {
 
       updateFilters({ from: String(newFrom), size: pageSize })
 
-      // Set the selected dog index based on the direction
+     
       if (direction === "next") {
-        setSelectedDogIndex(0) // First dog of the new page
+        setSelectedDogIndex(0) 
       } else {
-        setSelectedDogIndex(pageSize - 1) // Last dog of the new page
+        setSelectedDogIndex(pageSize - 1) 
       }
     },
     [filters.from, pageSize, updateFilters],
   )
 
-  // Memoize total pages calculation
   const totalPages = useMemo(
     () => Math.ceil(Math.min(searchResponse?.total || 0, 10000) / pageSize),
     [searchResponse?.total, pageSize],
   )
 
-  // Add useMemo for the FilterManager component to prevent unnecessary re-renders
   const filterManager = useMemo(
     () => (
       <FilterManager

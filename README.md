@@ -43,7 +43,7 @@ A modern dog adoption platform designed to connect potential pet owners with the
    ```
 2. Install dependencies:
     ```bash
-    npm install --legacy-peer-deps 
+    npm install
     # or
     yarn install
     ```

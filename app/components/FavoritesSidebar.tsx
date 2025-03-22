@@ -155,8 +155,8 @@ export default function FavoritesSidebar({
             <div className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700">
               <AnimatedFureverFriendButton
                 onClick={() => {
-                  onClose() // Close the sidebar first
-                  onGenerateMatch() // Then generate the match
+                  onClose() 
+                  onGenerateMatch() 
                 }}
                 disabled={favoriteDogs.length === 0}
               />

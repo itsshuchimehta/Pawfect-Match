@@ -51,7 +51,6 @@ export default function FilterManager({
       max: currentFilters.ageMax,
     })
 
-    // Reset selected location if zipCodes are empty
     if (!currentFilters.zipCodes || currentFilters.zipCodes.length === 0) {
       setSelectedLocation(null)
     }

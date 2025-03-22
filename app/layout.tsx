@@ -17,7 +17,6 @@ import { Inter, Playfair_Display } from "next/font/google"
 import ClientLayout from "./ClientLayout"
 import "../styles/globals.css"
 
-// Load fonts without optimization
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",

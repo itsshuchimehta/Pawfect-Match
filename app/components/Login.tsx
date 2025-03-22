@@ -1,13 +1,13 @@
 "use client"
 
 import type React from "react"
-
 import Hero from "./Hero"
 import { useState, useEffect, useRef } from "react"
 import { motion, useAnimation, useInView } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { login } from "../utils/api"
+import AuthErrorAlert from "./AuthErrorAlert"
 import { Heart, Search, Home, ArrowRight } from "lucide-react"
 import PawPrintBackground from "./PawPrintBackground"
 import { DotLottieReact } from "@lottiefiles/dotlottie-react"
@@ -17,24 +17,17 @@ interface LoginProps {
   onLogin: (name: string) => void
 }
 
-// Update the isValidName function
-const isValidName = (name: string): boolean => {
-  // Check if the name is not empty and not just whitespace
-  if (!name.trim()) return false
 
-  // Check if name contains at least 2 characters and only allowed characters
-  // Allows letters, spaces, hyphens, and apostrophes
+const isValidName = (name: string): boolean => {
+  if (!name.trim()) return false
   return /^[A-Za-z\s'-]{2,}$/.test(name.trim())
 }
 
-// Add a new function for email validation
 const isValidEmail = (email: string): boolean => {
-  // This regex pattern is more strict and requires at least one character after the last dot
   const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,}$/
   return emailRegex.test(email)
 }
 
-// Add a debounce function
 function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null
 
@@ -50,10 +43,9 @@ export default function Login({ onLogin }: LoginProps) {
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({})
   const [isLoading, setIsLoading] = useState(false)
   const [loginError, setLoginError] = useState<string | null>(null)
+  const [showAuthErrorAlert, setShowAuthErrorAlert] = useState(false)
   const [activeSection, setActiveSection] = useState<"hero" | "login" | "features" | "cta">("hero")
-  // Add a new state to track if we're currently scrolling
   const [isScrolling, setIsScrolling] = useState(false)
-  // Add a state to track the section we want to display in metadata
   const [metadataSection, setMetadataSection] = useState<"hero" | "login" | "features" | "cta">("hero")
 
   const loginFormRef = useRef<HTMLDivElement>(null)
@@ -63,20 +55,17 @@ export default function Login({ onLogin }: LoginProps) {
   const isLoginFormInView = useInView(loginFormRef, { once: false, margin: "-100px" })
   const isFeaturesInView = useInView(featuresRef, { once: true, margin: "-100px" })
   const isCtaInView = useInView(ctaRef, { once: false, margin: "-100px" })
-  // Fix the useInView options for the hero section
   const isHeroInView = useInView(heroRef, { amount: 0.6 })
   const controls = useAnimation()
   const featuresControls = useAnimation()
 
-  // Create a debounced version of setMetadataSection
   const debouncedSetMetadataSection = useRef(
     debounce((section: "hero" | "login" | "features" | "cta") => {
       setMetadataSection(section)
       setIsScrolling(false)
-    }, 300), // 300ms debounce time
+    }, 300), 
   ).current
 
-  // Update the useEffect for isLoginFormInView
   useEffect(() => {
     if (isLoginFormInView) {
       controls.start("visible")
@@ -85,7 +74,6 @@ export default function Login({ onLogin }: LoginProps) {
     }
   }, [isLoginFormInView, controls, debouncedSetMetadataSection])
 
-  // Update the useEffect for isFeaturesInView
   useEffect(() => {
     if (isFeaturesInView) {
       featuresControls.start("visible")
@@ -94,7 +82,6 @@ export default function Login({ onLogin }: LoginProps) {
     }
   }, [isFeaturesInView, featuresControls, debouncedSetMetadataSection])
 
-  // Add a new useEffect for the CTA section
   useEffect(() => {
     if (isCtaInView) {
       setActiveSection("cta")
@@ -102,7 +89,6 @@ export default function Login({ onLogin }: LoginProps) {
     }
   }, [isCtaInView, debouncedSetMetadataSection])
 
-  // Add a dedicated useEffect for the hero section
   useEffect(() => {
     if (isHeroInView) {
       setActiveSection("hero")
@@ -110,7 +96,6 @@ export default function Login({ onLogin }: LoginProps) {
     }
   }, [isHeroInView, debouncedSetMetadataSection])
 
-  // Add an effect to detect scrolling
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolling(true)
@@ -123,36 +108,30 @@ export default function Login({ onLogin }: LoginProps) {
     }
   }, [])
 
-  // Add an effect to handle programmatic scrolling
+  
   useEffect(() => {
     const handleScrollEnd = () => {
-      // When scrolling stops, update metadata to match active section
       if (isScrolling) {
         debouncedSetMetadataSection(activeSection)
       }
     }
-
-    // Check if scrolling has stopped after a delay
     const scrollTimeout = setTimeout(handleScrollEnd, 100)
-
     return () => {
       clearTimeout(scrollTimeout)
     }
   }, [isScrolling, activeSection, debouncedSetMetadataSection])
 
   const scrollToSection = (sectionId: string) => {
-    setIsScrolling(true) // Set scrolling state when programmatically scrolling
-
+    setIsScrolling(true) 
     const section = document.getElementById(sectionId)
     if (section) {
-      const headerHeight = 80 // Adjust this value based on your header height
+      const headerHeight = 80
       const elementPosition = section.getBoundingClientRect().top + window.pageYOffset - headerHeight
       window.scrollTo({
         top: elementPosition,
         behavior: "smooth",
       })
 
-      // Set the target section immediately for better UX during programmatic scrolling
       if (sectionId === "login-form") {
         debouncedSetMetadataSection("login")
       } else if (sectionId === "features") {
@@ -165,23 +144,19 @@ export default function Login({ onLogin }: LoginProps) {
     const { name, value } = e.target
     if (name === "name") {
       setName(value)
-      // Clear error when user starts typing
       if (errors.name) {
         setErrors((prev) => ({ ...prev, name: undefined }))
       }
     } else if (name === "email") {
       setEmail(value)
-      // Clear error when user starts typing
       if (errors.email) {
         setErrors((prev) => ({ ...prev, email: undefined }))
       }
     }
   }
 
-  // Update the handleBlur function
   const handleBlur = (field: "name" | "email") => {
     const newErrors: { [key: string]: string } = {}
-
     if (field === "name") {
       if (!name.trim()) {
         newErrors.name = "Name is required"
@@ -191,7 +166,6 @@ export default function Login({ onLogin }: LoginProps) {
         newErrors.name = "Please enter a valid name"
       }
     }
-
     if (field === "email") {
       if (!email.trim()) {
         newErrors.email = "Email is required"
@@ -199,11 +173,9 @@ export default function Login({ onLogin }: LoginProps) {
         newErrors.email = "Please enter a valid email address"
       }
     }
-
     setErrors((prev) => ({ ...prev, ...newErrors }))
   }
 
-  // Update the validateForm function
   const validateForm = () => {
     const newErrors: { name?: string; email?: string } = {}
     if (!name.trim()) {
@@ -213,7 +185,6 @@ export default function Login({ onLogin }: LoginProps) {
     } else if (!isValidName(name)) {
       newErrors.name = "Please enter a valid name (at least 2 letters)"
     }
-
     if (!email.trim()) {
       newErrors.email = "Email is required"
     } else if (!isValidEmail(email)) {
@@ -223,24 +194,26 @@ export default function Login({ onLogin }: LoginProps) {
     return Object.keys(newErrors).length === 0
   }
 
-  // Replace the existing handleSubmit function with this updated version
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
       setIsLoading(true)
-      setLoginError(null) // Clear any previous login errors
+      setLoginError(null) 
       try {
-        await login(name, email)
-        onLogin(name)
-      } catch (error) {
-        console.error("Login error:", error)
-        setLoginError("Login failed. Please try again.")
-      } finally {
-        setIsLoading(false)
-      }
+        const response = await login(name, email)
+        if (!response) {
+          setShowAuthErrorAlert(true)
+         }else{
+           onLogin(name)
+         }
+       } catch (error) {
+         console.error("Login error:", error)
+         setLoginError("Login failed. Please try again.")
+       } finally {
+         setIsLoading(false)
+       }
     }
   }
-
   const features = [
     {
       icon: Search,
@@ -261,7 +234,6 @@ export default function Login({ onLogin }: LoginProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 dark:from-gray-900 dark:to-purple-900 relative overflow-hidden">
-      {/* Update the DynamicMetadata component to use metadataSection instead of activeSection */}
       <DynamicMetadata
         title={
           metadataSection === "hero"
@@ -292,7 +264,9 @@ export default function Login({ onLogin }: LoginProps) {
           className="min-h-[100vh] flex flex-col items-center justify-center"
         />
       </div>
-
+      {showAuthErrorAlert && (
+        <AuthErrorAlert onClose={() => setShowAuthErrorAlert(false)} />
+      )}
       <motion.section
         id="login-form"
         ref={loginFormRef}
@@ -348,7 +322,7 @@ export default function Login({ onLogin }: LoginProps) {
                 <form
                   onSubmit={handleSubmit}
                   className="space-y-6"
-                  noValidate // Add this to prevent browser validation
+                  noValidate
                 >
                   <div className="space-y-2">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -357,7 +331,7 @@ export default function Login({ onLogin }: LoginProps) {
                     <Input
                       type="text"
                       id="name"
-                      name="name" // Add name attribute
+                      name="name" 
                       value={name}
                       onChange={handleInputChange}
                       onBlur={() => handleBlur("name")}

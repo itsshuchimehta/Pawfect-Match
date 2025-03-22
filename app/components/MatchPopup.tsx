@@ -76,7 +76,6 @@ export default function MatchPopup({ dog, onClose }: MatchPopupProps) {
             image={dog.img}
           />
 
-          {/* Lazy load fireworks with suspense fallback */}
           {showFireworks && (
             <Suspense fallback={null}>
               <LazyFireworks />
