@@ -24,7 +24,7 @@ async function customFetch(url: string, options: RequestInit = {}): Promise<Resp
     localStorage.removeItem("isAuthenticated")
     localStorage.removeItem("authExpiration")
     localStorage.removeItem("userName")
-    window.location.href = '/';
+    window.location.href = `${process.env.NODE_ENV === 'production' ? '/Pawfect-Match' : '/'}`;
     throw new Error("Unauthorized, redirecting to Login!")
   }
   if (!response.ok) {
