@@ -87,10 +87,10 @@ export default function Header({ isAuthenticated, onLogout, userName, isDarkMode
   )
 
   const handleNavigation = (action: () => void) => {
-    setIsMobileMenuOpen(false)
+    setIsMobileMenuOpen(false);
     setTimeout(() => {
-      action()
-    }, 10)
+        action();
+    }, 100);
   }
 
   const NavigationItems = ({ isMobile = false }: { isMobile?: boolean }) => (

@@ -67,16 +67,17 @@ export default function Footer() {
         </div>
         <div className="mt-8 pt-8 border-t border-primary/20 dark:border-primary/10">
           <p className="text-sm text-center text-foreground dark:text-gray-300">
-            © {new Date().getFullYear()} Pawfect Match. Created with ❤️ by{" "}
-            <a
-              href="https://github.com/itsshuchimehta"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Shuchi Mehta
-            </a>
-            . All rights reserved.
+            © 2025 Pawfect Match. All rights reserved.
+            <span className="block sm:inline"> Created with ❤️ by{" "}
+              <a
+                href="https://github.com/itsshuchimehta"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                Shuchi Mehta
+              </a>
+            </span>
           </p>
         </div>
       </div>
