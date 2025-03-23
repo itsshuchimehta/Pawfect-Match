@@ -29,6 +29,11 @@ A modern dog adoption platform designed to connect potential pet owners with the
 - **State Management**: React hooks and context API
 - **Type Safety**: [TypeScript](https://www.typescriptlang.org/) for improved developer experience
 
+### DevOps & Deployment
+- **CI/CD**: GitHub Actions for automated build and deployment
+- **Hosting**: GitHub Pages with custom configuration
+- **Build Output**: Static export with Next.js
+
 ### Performance Optimizations
 - Code splitting and lazy loading
 - Memoization techniques
