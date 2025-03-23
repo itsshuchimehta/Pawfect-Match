@@ -4,8 +4,10 @@ A modern dog adoption platform designed to connect potential pet owners with the
 
 - [✨ Features](#-features)
 - [🛠️ Tech Stack](#%EF%B8%8F-tech-stack)
+- [📋 Prerequisites](#-prerequisites)
 - [🚀 Installation](#-installation)
 - [🌐 Browser Compatibility](#-browser-compatibility)
+- [License](#license)
 
 ## ✨ Features
 
@@ -33,6 +35,10 @@ A modern dog adoption platform designed to connect potential pet owners with the
 - Optimized image loading
 - Debounced API calls
 
+## 📋 Prerequisites
+
+- Node.js 18.x or higher
+- npm 
 
 ## 🚀 Installation
 
@@ -44,14 +50,10 @@ A modern dog adoption platform designed to connect potential pet owners with the
 2. Install dependencies:
     ```bash
     npm install
-    # or
-    yarn install
     ```
 3. Start the development server:
     ```bash
     npm run dev
-    # or
-    yarn dev
     ```
 4. Open http://localhost:3000 in your browser to see the application.
 
@@ -59,3 +61,9 @@ A modern dog adoption platform designed to connect potential pet owners with the
 
 ## 🌐 Browser Compatibility
 If you encounter authentication issues, please ensure that cross-site tracking is not being blocked. Go to Browser's Settings > Privacy & Security and disable “Prevent Cross-Site Tracking.”
+
+## License
+
+Copyright (c) 2025 Shuchi Mehta. All rights reserved.
+
+This code is provided for viewing and reference purposes only. No permission is granted for modification or redistribution.
